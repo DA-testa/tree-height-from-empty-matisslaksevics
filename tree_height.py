@@ -3,28 +3,29 @@
 import sys
 import threading
 import numpy
+
 def compute_height(n, parents):
-    depths = [0] * n
-    def compute_depth(node):
-        if depths[node] != 0:
-            return depths[node]
-        if parents[node] == -1:
-            depths[node] = 1
-        else:
-            depths[node] = compute_depth(parents[node]) + 1
-        return depths[node]
-    max_depth = 0
+    heights = [0] * n
+    root = -1
     for i in range(n):
-        depth = compute_depth(i)
-        if depth > max_depth:
-            max_depth = depth
-    return max_depth
+        if parents[i] == -1:
+            root = i
+    def dfs(node):
+        nonlocal heights
+        for child in range(n):
+            if parents[child] == node:
+                if heights[child] == 0:
+                    dfs(child)
+                heights[node] = max(heights[node], heights[child] + 1)
+    dfs(root)
+    return heights[root]
+
 def main():
     n = int(input())
     parents = list(map(int, input().split()))
-    print(compute_height(n, parents))
-    pass
-sys.setrecursionlimit(10**7) 
+    height = compute_height(n, parents)
+    print(height)
+
+sys.setrecursionlimit(10**7)
+threading.stack_size(2**27)
 threading.Thread(target=main).start()
-main()
-# print(numpy.array([1,2,3]))
