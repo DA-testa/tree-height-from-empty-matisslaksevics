@@ -3,7 +3,6 @@ import threading
 import numpy
 
 def compute_height(n, parents):
-    # First we create the tree as an array of lists
     tree = [[] for _ in range(n)]
     root = 0
     for i, parent in enumerate(parents):
@@ -16,26 +15,26 @@ def compute_height(n, parents):
             return 1
         else:
             return 1 + max(height(child) for child in tree[node])
-
     return height(root)
 
 def main():
-    input_type = input("Enter input type - 'I' for keyboard or 'F' for file: ")
-    if "I" in input_type:
-        n = int(input("Nodes: "))
-        parents = numpy.array(list(map(int, input("Parents: ").split())))
+    text = input()
+    if 'I' in text:
+        n = int(input())
+        parents = numpy.array(list(map(int, input().split())))
         print(compute_height(n, parents))
-    if "F" in input_type:
-        filename = input("Enter filename (without extension): ")# File name not allowed to have 'a'
+
+    if 'F' in text:
+        filename = input()
         filename = "test/" + filename
         if 'a' not in filename:
             try:
-                with open(f"./{filename}.txt") as f:
-                    n = int(input("Nodes: "))
-                    parents = numpy.array(list(map(int, input("Parents: ").split())))
+                with open(filename, "r") as file:
+                    n = int(file.readline())
+                    parents = numpy.array(list(map(int, file.readline().split())))
                     print(compute_height(n, parents))
             except:
-                return "Not found"
+                return "File not found"
 # In Python, the default limit on recursion depth is rather low,
 # so raise it here for this problem. Note that to take advantage
 # of bigger stack, we have to launch the computation in a new thread.
