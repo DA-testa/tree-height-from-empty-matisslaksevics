@@ -1,38 +1,44 @@
 import sys
 import threading
-import numpy as np
+import numpy
 
-sys.setrecursionlimit(10**7)
-
-def compute_height(parents):
-    # create an empty list of children for each node
-    children = [[] for _ in range(len(parents))]
-    
-    # populate the children list
+def compute_height(n, parents):
+    # First we create the tree as an array of lists
+    tree = [[] for _ in range(n)]
+    root = 0
     for i, parent in enumerate(parents):
         if parent == -1:
             root = i
         else:
-            children[parent].append(i)
-    
-    # define a recursive function to compute the height of the tree
+            tree[parent].append(i)
     def height(node):
-        if len(children[node]) == 0:
+        if not tree[node]:
             return 1
         else:
-            return 1 + max(height(child) for child in children[node])
-    
+            return 1 + max(height(child) for child in tree[node])
+
     return height(root)
 
 def main():
-    # read input from user
-    n = int(input())
-    parents = np.fromstring(input(), dtype=int, sep=' ')
-    
-    # compute and print the height of the tree
-    print(compute_height(parents))
-    
-# use threading to increase the stack size and avoid RecursionError for large inputs
-threading.stack_size(2**27)
-thread = threading.Thread(target=main)
-thread.start()
+    input_type = input("Enter input type - 'I' for keyboard or 'F' for file: ")
+    if "I" in input_type:
+        n = int(input("Nodes: "))
+        parents = numpy.array(list(map(int, input("Parents: ").split())))
+        print(compute_height(n, parents))
+    if "F" in input_type:
+        filename = input("Enter filename (without extension): ")# File name not allowed to have 'a'
+        filename = "test/" + filename
+        if 'a' not in filename:
+            try:
+                with open(f"./{filename}.txt") as f:
+                    n = int(input("Nodes: "))
+                    parents = numpy.array(list(map(int, input("Parents: ").split())))
+                    print(compute_height(n, parents))
+            except:
+                return "Not found"
+# In Python, the default limit on recursion depth is rather low,
+# so raise it here for this problem. Note that to take advantage
+# of bigger stack, we have to launch the computation in a new thread.
+sys.setrecursionlimit(10**7)  # max depth of recursion
+threading.stack_size(2**27)   # new thread will get stack of such size
+threading.Thread(target=main).start()
