@@ -1,3 +1,5 @@
+# Matīss Lakševics,221RDB363, 4.grupa
+
 import sys
 import threading
 import numpy
